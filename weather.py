@@ -1,4 +1,7 @@
 def check_weather(city):  # Defines a function that accepts a city as a parameter
+    if city == "":  # Checks if no city name was provided
+        print("please provide a city name.")
+        return
   
     print("Checking weather for", city)  # Displays a message indicating which city's weather is being checked
   
