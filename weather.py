@@ -9,4 +9,4 @@ def check_weather(city, unit):
   
     print("Connecting to weather service...")  
 
-check_weather("Paris", "Celsius")  #test
+check_weather("Paris", "Celsius") 
