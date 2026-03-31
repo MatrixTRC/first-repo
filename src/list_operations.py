@@ -8,5 +8,6 @@ def find_biggest_number_or_error(numbers):
             max_number = num
     return max_number
 
-find_biggest_number_or_error([1, 2, 3])
+if __name__ == "__main__":
+    print(find_biggest_number_or_error([1, 2, 3]))
 
