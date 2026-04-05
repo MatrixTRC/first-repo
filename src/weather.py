@@ -2,21 +2,30 @@
 
 from urllib import error, parse, request
 import json
+import time
 
 
 GEOCODE_URL = "https://geocoding-api.open-meteo.com/v1/search"
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 
 
-def _get_json(url, params):
-    """Make a GET request and return decoded JSON data."""
+def _get_json(url, params, retries=3, backoff=1.0):
+    """Make a GET request and return decoded JSON data, retrying on transient failures."""
     query_string = parse.urlencode(params)
     full_url = f"{url}?{query_string}"
 
-    with request.urlopen(full_url, timeout=10) as response:
-        if response.status != 200:
-            raise RuntimeError(f"API request failed with status {response.status}")
-        return json.loads(response.read().decode("utf-8"))
+    last_exc = None
+    for attempt in range(retries):
+        try:
+            with request.urlopen(full_url, timeout=10) as response:
+                if response.status != 200:
+                    raise RuntimeError(f"API request failed with status {response.status}")
+                return json.loads(response.read().decode("utf-8"))
+        except (error.URLError, RuntimeError) as exc:
+            last_exc = exc
+            if attempt < retries - 1:
+                time.sleep(backoff * (2 ** attempt))
+    raise last_exc
 
 
 def _normalize_unit(unit):
